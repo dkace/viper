@@ -9,7 +9,7 @@ func main() {
 	r := gin.Default()
 	r.GET("/api/auth/register", func(c *gin.Context) {
 		//  获取参数
-		name := c.PostForm("name")
+		//name := c.PostForm("name")
 		password := c.PostForm("password")
 		telephone := c.PostForm("telephone")
 		// 数据验证
