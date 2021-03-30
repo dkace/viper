@@ -12,9 +12,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Name      string `gorm:"type:varchar(20);not null"`
-	PassWord  string `gorm:"size 255;not null"`
-	TelePhone string `gorm:"type:varchar(11);not null"`
+	Name      string `gorm:"type:varchar(20);not null;column:name"`
+	PassWord  string `gorm:"size 255;not null;column:password"`
+	TelePhone string `gorm:"type:varchar(11);not null;column:telephone"`
 }
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 		telephone := c.PostForm("telephone")
 		// 数据验证
 
-		if len(telephone) != 0 {
+		if len(telephone) != 11 {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "手机号必须为11位"})
 			return
 		}
@@ -46,6 +46,7 @@ func main() {
 		// 判断手机号是否存在，如果存在不允许用户注册
 		if IsTelePhoneExist(db, telephone) {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "用户已存在"})
+			return
 		}
 
 		//  如果用户不存在创建用户
@@ -86,7 +87,7 @@ func InitDB() *gorm.DB {
 
 func IsTelePhoneExist(db *gorm.DB, telephone string) bool {
 	var user User
-	db.Where(telephone).First(&User{})
+	db.Where("telephone=?", telephone).First(&user)
 	if user.ID != 0 {
 		return true
 	}
